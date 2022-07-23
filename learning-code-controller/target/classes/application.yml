@@ -1,0 +1,55 @@
+server:
+  tomcat:
+    uri-encoding: UTF-8
+  servlet:
+    context-path: /learning
+  port: 8081
+  compression:
+    enabled: true
+  http2:
+    enabled: true
+
+spring:
+  profiles:
+    active: dev
+  aop:
+    proxy-target-class: true
+  application:
+    name: learningweb
+  datasource:
+    druid:
+        connection-init-sqls: set names utf8mb4
+        driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://${ONEBLOG_DATASOURCE_HOST:10.1.20.229}:${ONEBLOG_DATASOURCE_PORT:3306}/${ONEBLOG_DATASOURCE_DATABASE_NAME:dblog}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true&useLegacyDatetimeCode=false
+    username: ${ONEBLOG_DATASOURCE_USERNAME:root}
+    password: ${ONEBLOG_DATASOURCE_PASSWORD:root}
+    ####### Redis Config #######
+  redis:
+      # Redis服务器地址
+    host: ${REDIS_HOST:127.0.0.1}
+      # Redis服务器连接端口
+    port: ${REDIS_PORT:6379}
+      # Redis服务器连接密码（默认为空）
+      #password: ${REDIS_PASSWORD:123456ZHYD}
+mybatis-plus:
+    configuration:
+      #自动下划线驼峰转换
+      map-underscore-to-camel-case: true
+      #打开二级缓存
+      #    cache-enabled: true
+      #懒加载
+      lazy-loading-enabled: true
+      #输出sql执行语句和结果到控制台
+      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    global-config:
+      #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+      field-strategy: 1
+      #主键生成策略
+      #      id-type: AUTO
+      # Sequence序列接口实现类配置
+      #      key-generator: com.baomidou.mybatisplus.extension.incrementer.OracleKeyGenerator
+      db-config:
+        logic-delete-value: "Y" # 逻辑已删除值(默认为 Y)
+        logic-not-delete-value: "N" # 逻辑未删除值(默认为 N)
+    mapper-locations: classpath*:mapper/**/*.xml

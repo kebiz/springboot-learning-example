@@ -1,0 +1,22 @@
+server:
+  tomcat:
+    uri-encoding: UTF-8
+  servlet:
+    context-path: /learning
+  port: 8081
+  compression:
+    enabled: true
+  http2:
+    enabled: true
+
+spring:
+  profiles:
+    active: dev
+  aop:
+    proxy-target-class: true
+  application:
+    name: learningweb
+  mvc:
+    view:
+      prefix: /WEB-INF/
+      suffix: .jsp
