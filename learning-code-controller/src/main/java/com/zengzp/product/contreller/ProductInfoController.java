@@ -10,8 +10,10 @@ import com.zengzp.product.entity.param.PageParam;
 import com.zengzp.product.service.ProductInfoService;
 import com.zengzp.product.vo.ProductInfoVO;
 import com.zengzp.product.vo.ResultVo;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +30,8 @@ import org.springframework.web.bind.annotation.*;
 public class ProductInfoController {
     @Autowired
     private ProductInfoService productInfoService;
+    @Autowired
+    private RedisTemplate redisTemplate;
     @PostMapping("/productInfo")
     public ProductInfo getByVo(@Validated ProductInfoVO productInfoVO){
         QueryWrapper<ProductInfo> queryWrapper1 = new QueryWrapper<>();
@@ -37,9 +41,11 @@ public class ProductInfoController {
        return productInfoService.getOne(queryWrapper1);
     }
     @GetMapping("/findById")
-    //@NotRestControllerAdvice
+    @NotRestControllerAdvice
     public String findById(){
-        return "success";
+        redisTemplate.opsForValue().set("test:redis","ts");
+
+        return (String) redisTemplate.opsForValue().get("test:redis");
     }
     @PostMapping("/saveProductInfo")
     public void saveProductInfo(@Validated ProductInfoVO productInfoVO){

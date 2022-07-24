@@ -21,9 +21,9 @@ spring:
         connection-init-sqls: set names utf8mb4
         driver-class-name: com.mysql.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://${ONEBLOG_DATASOURCE_HOST:10.1.20.229}:${ONEBLOG_DATASOURCE_PORT:3306}/${ONEBLOG_DATASOURCE_DATABASE_NAME:dblog}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true&useLegacyDatetimeCode=false
-    username: ${ONEBLOG_DATASOURCE_USERNAME:root}
-    password: ${ONEBLOG_DATASOURCE_PASSWORD:root}
+    url: jdbc:mysql://${DATASOURCE_HOST:127.0.0.1}:${DATASOURCE_PORT:3306}/${DATASOURCE_DATABASE_NAME:dblog}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true&useLegacyDatetimeCode=false
+    username: ${DATASOURCE_USERNAME:root}
+    password: ${DATASOURCE_PASSWORD:root123}
     ####### Redis Config #######
   redis:
       # Redis服务器地址
@@ -31,7 +31,9 @@ spring:
       # Redis服务器连接端口
     port: ${REDIS_PORT:6379}
       # Redis服务器连接密码（默认为空）
-      #password: ${REDIS_PASSWORD:123456ZHYD}
+    #password: ${REDIS_PASSWORD:123456ZHYD}
+  main:
+    allow-bean-definition-overriding: true
 mybatis-plus:
     configuration:
       #自动下划线驼峰转换

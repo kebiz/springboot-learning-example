@@ -4,6 +4,7 @@ import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,18 +17,17 @@ import org.springframework.context.annotation.Configuration;
  * @version: 1.0$
  */
 @Configuration
-@EnableCaching
 public class MyRedisConfig extends RedisConfig {
-    @Value("${REDIS_HOST}")
+    @Value("${spring.redis.host}")
     private String host;
-    @Value("${REDIS_PORT}")
+    @Value("${spring.redis.port}")
     private String port;
-    @Value("${REDIS_PASSWORD}")
-    private String password;
+   // @Value("${redis.password}")
+   // private String password;
     @Bean
     public RedissonClient createRedisson(){
         Config config=new Config();
-        config.useSingleServer().setAddress("redis://"+host+":"+port).setPassword(password);
+        config.useSingleServer().setAddress("redis://"+host+":"+port);
        return Redisson.create(config);
     }
 }
