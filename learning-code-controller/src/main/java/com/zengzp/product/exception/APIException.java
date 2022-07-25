@@ -12,9 +12,15 @@ import lombok.Getter;
  * @modified By：
  * @version: 1.0$
  */
+@Getter
 public class APIException extends BaseException{
+    private StatusCode statusCode;
     public APIException(){super();}
     public APIException(String message) {
         super(message);
+    }
+    public APIException(StatusCode statusCode,String message) {
+        super(message);
+        this.statusCode=statusCode;
     }
 }

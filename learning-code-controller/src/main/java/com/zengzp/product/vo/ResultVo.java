@@ -64,4 +64,7 @@ public class ResultVo {
     public static ResultVo fail() {
         return new ResultVo(ResultCode.FAILED.getCode(), ResultCode.FAILED.getMsg(), null);
     }
+    public static ResultVo fail(StatusCode statusCode) {
+        return new ResultVo(statusCode.getCode(), statusCode.getMsg(), null);
+    }
 }

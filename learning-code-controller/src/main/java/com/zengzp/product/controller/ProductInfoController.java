@@ -1,20 +1,17 @@
-package com.zengzp.product.contreller;
+package com.zengzp.product.controller;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zengzp.product.annotation.NoRepeatSubmit;
 import com.zengzp.product.annotation.NotRestControllerAdvice;
 import com.zengzp.product.entity.ProductInfo;
 import com.zengzp.product.entity.param.PageParam;
 import com.zengzp.product.service.ProductInfoService;
 import com.zengzp.product.vo.ProductInfoVO;
 import com.zengzp.product.vo.ResultVo;
-import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +37,14 @@ public class ProductInfoController {
         queryWrapper1.lambda().eq(ProductInfo::getProductStatus,productInfoVO.getProductStatus());
        return productInfoService.getOne(queryWrapper1);
     }
+    @PostMapping("/checkReapeatSubmit")
+    @NoRepeatSubmit
+    public ResultVo checkSubmit(){
+        QueryWrapper<ProductInfo> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.lambda().eq(ProductInfo::getProductId,1);
+        productInfoService.getOne(queryWrapper1);
+        return ResultVo.success();
+    }
     @GetMapping("/findById")
     @NotRestControllerAdvice
     public String findById(){
@@ -48,6 +53,7 @@ public class ProductInfoController {
         return (String) redisTemplate.opsForValue().get("test:redis");
     }
     @PostMapping("/saveProductInfo")
+    @NoRepeatSubmit
     public void saveProductInfo(@Validated ProductInfoVO productInfoVO){
         ProductInfo productInfo=new ProductInfo();
         BeanUtils.copyProperties(productInfoVO,productInfo);
