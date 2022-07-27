@@ -12,4 +12,5 @@ import com.zengzp.product.entity.ProductInfo;
  * @version: 1.0$
  */
 public interface ProductInfoService extends IService<ProductInfo> {
+    void retrySubmit(int code)throws Exception;
 }

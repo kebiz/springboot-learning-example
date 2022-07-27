@@ -12,6 +12,9 @@ import com.zengzp.product.vo.ResultVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,4 +68,9 @@ public class ProductInfoController {
         queryWrapper1.lambda().like(ProductInfo::getProductName,productName);
         return productInfoService.page(pageParam.createPage(),queryWrapper1);
     }
+   @PostMapping("/retrySubmit")
+    public void retrySubmit() throws  Exception{
+       productInfoService.retrySubmit(500);
+    }
+
 }

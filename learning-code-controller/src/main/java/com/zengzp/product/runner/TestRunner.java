@@ -32,28 +32,28 @@ public class TestRunner implements ApplicationRunner {
     private RestTemplate restTemplate;
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        System.out.println("执行多线程测试");
-        String url="http://localhost:8081/learning/product/checkReapeatSubmit";
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
-
-        for(int i=0; i<10; i++){
-            String userId = "userId" + i;
-            HttpEntity request = buildRequest(userId);
-            executorService.submit(() -> {
-                try {
-                    countDownLatch.await();
-                    System.out.println("Thread:"+Thread.currentThread().getName()+", time:"+System.currentTimeMillis());
-                    ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-                    System.out.println("Thread:"+Thread.currentThread().getName() + "," + response.getBody());
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
-        }
-
-        countDownLatch.countDown();
+//        System.out.println("执行多线程测试");
+//        String url="http://localhost:8081/learning/product/checkReapeatSubmit";
+//        CountDownLatch countDownLatch = new CountDownLatch(1);
+//        ExecutorService executorService = Executors.newFixedThreadPool(10);
+//
+//        for(int i=0; i<10; i++){
+//            String userId = "userId" + i;
+//            HttpEntity request = buildRequest(userId);
+//            executorService.submit(() -> {
+//                try {
+//                    countDownLatch.await();
+//                    System.out.println("Thread:"+Thread.currentThread().getName()+", time:"+System.currentTimeMillis());
+//                    ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+//                    System.out.println("Thread:"+Thread.currentThread().getName() + "," + response.getBody());
+//
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            });
+//        }
+//
+//        countDownLatch.countDown();
     }
 
     private HttpEntity buildRequest(String userId) {

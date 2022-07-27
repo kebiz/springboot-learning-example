@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zengzp.product.dao.mapper.RoleMapper">
+
+    <resultMap id="BaseResultMap" type="com.zengzp.product.entity.Role">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="available" column="available" jdbcType="VARCHAR"/>
+            <result property="description" column="description" jdbcType="VARCHAR"/>
+            <result property="role" column="role" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,available,description,
+        role,create_time,update_time
+    </sql>
+    <select id="listRolesByLoginName" parameterType="String" resultMap="BaseResultMap">
+		SELECT
+			r.id,
+			r.name,
+			r.description
+		FROM
+			role r
+		INNER JOIN user_role ur ON ur.role_id = r.id
+		INNER JOIN user_info info ON info.id = ur.user_id
+		WHERE
+			info.login_name = #{loginName}
+		AND r.available = 1
+	</select>
+</mapper>
