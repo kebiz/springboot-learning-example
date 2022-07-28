@@ -1,8 +1,12 @@
 package com.zengzp.product.vo;
 
+import com.zengzp.product.constants.AppCode;
 import com.zengzp.product.constants.ResultCode;
 import com.zengzp.product.service.StatusCode;
 import lombok.Data;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.Map;
 
 /**
  * @author ：zengzhipeng
@@ -48,7 +52,21 @@ public class ResultVo {
         this.msg = statusCode.getMsg();
         this.data = null;
     }
+    public static ModelAndView view(String view) {
+        return new ModelAndView(view);
+    }
 
+    public static ModelAndView view(String view, Map<String, Object> model) {
+        return new ModelAndView(view, model);
+    }
+
+    public static ModelAndView redirect(String view) {
+        return new ModelAndView("redirect:" + view);
+    }
+
+    public static ModelAndView forward(String view) {
+        return new ModelAndView("forward:" + view);
+    }
     public static ResultVo success(Object object) {
         return new ResultVo(object);
     }
@@ -66,5 +84,8 @@ public class ResultVo {
     }
     public static ResultVo fail(StatusCode statusCode) {
         return new ResultVo(statusCode.getCode(), statusCode.getMsg(), null);
+    }
+    public static ResultVo fail(String msg) {
+        return new ResultVo(AppCode.LOGIN_ERROR.getCode(), msg, null);
     }
 }

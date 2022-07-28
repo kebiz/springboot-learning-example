@@ -14,6 +14,10 @@ spring:
     active: dev
   aop:
     proxy-target-class: true
+  mvc:
+    view:
+      prefix: /WEB-INF/
+      suffix: .jsp
   application:
     name: learningweb
   datasource:
@@ -21,9 +25,9 @@ spring:
         connection-init-sqls: set names utf8mb4
         driver-class-name: com.mysql.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://${DATASOURCE_HOST:127.0.0.1}:${DATASOURCE_PORT:3306}/${DATASOURCE_DATABASE_NAME:dblog}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true&useLegacyDatetimeCode=false
+    url: jdbc:mysql://${DATASOURCE_HOST:10.1.20.229}:${DATASOURCE_PORT:3306}/${DATASOURCE_DATABASE_NAME:dblog}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true&useLegacyDatetimeCode=false
     username: ${DATASOURCE_USERNAME:root}
-    password: ${DATASOURCE_PASSWORD:root123}
+    password: ${DATASOURCE_PASSWORD:root}
     ####### Redis Config #######
   redis:
       # Redis服务器地址
