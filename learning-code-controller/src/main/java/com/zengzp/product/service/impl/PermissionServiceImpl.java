@@ -25,6 +25,6 @@ implements PermissionService {
         if(CollectionUtil.isEmpty(permissions)) {
             return null;
         }
-        return permissionMapper.listByLoginName(loginName);
+        return permissions;
     }
 }

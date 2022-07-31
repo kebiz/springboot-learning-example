@@ -19,8 +19,8 @@
     </sql>
     <select id="listByLoginName" parameterType="String" resultMap="BaseResultMap">
 		SELECT
-           id,name,permission,
-        url,create_time,update_time
+           re.id,re.name,re.permission,
+        re.url,re.create_time,re.update_time
         FROM
             permission re
         INNER JOIN role_permission rr ON re.id = rr.permission_id

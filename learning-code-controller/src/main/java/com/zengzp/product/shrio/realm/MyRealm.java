@@ -41,23 +41,20 @@ public class MyRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
-        String loginName = (String) principalCollection.getPrimaryPrincipal();
-        QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(UserInfo::getLoginName,loginName);
-        UserInfo user=userInfoService.getOne(queryWrapper);
+        UserInfo userInfo = (UserInfo) principalCollection.getPrimaryPrincipal();
         //判断数据库是否有这用户
-        if (user == null) {
+        if (userInfo == null) {
             throw new UnknownAccountException();
         }
         //添加用户角色
-        List<Role> roleList=roleService.listRolesByLoginName(loginName);
+        List<Role> roleList=roleService.listRolesByLoginName(userInfo.getLoginName());
         if(CollectionUtil.isNotEmpty(roleList)){
             for(Role role:roleList){
                 simpleAuthorizationInfo.addRole(role.getRole());
             }
         }
         //添加角色权限
-        List<Permission> permissions = permissionService.listByLoginName(loginName);
+        List<Permission> permissions = permissionService.listByLoginName(userInfo.getLoginName());
         if (!CollectionUtils.isEmpty(permissions)) {
             Set<String> permissionSet = new HashSet<>();
             for (Permission p : permissions) {

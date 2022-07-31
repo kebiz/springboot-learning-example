@@ -19,9 +19,8 @@
     </sql>
     <select id="listRolesByLoginName" parameterType="String" resultMap="BaseResultMap">
 		SELECT
-			r.id,
-			r.name,
-			r.description
+			 r.id,r.available,r.description,
+        r.role,r.create_time,r.update_time
 		FROM
 			role r
 		INNER JOIN user_role ur ON ur.role_id = r.id
