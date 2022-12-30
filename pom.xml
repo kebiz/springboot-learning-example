@@ -12,6 +12,11 @@
         <module>learning-code-unrepeated</module>
         <module>learning-code-controller</module>
         <module>learning-code-codegen</module>
+        <module>learning-code-elasticsearch</module>
+        <module>learning-code-rabbitmq</module>
+        <module>learning-code-cas</module>
+        <module>spring-security-cas-master</module>
+        <module>learning-cart-service</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -26,6 +31,17 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
             <version>1.18.22</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.5.2.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>1.5.2.Final</version>
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>

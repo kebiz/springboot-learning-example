@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: elasticsearch-app
+  thymeleaf:
+    cache: false
+  rabbitmq:
+  host: localhost
+  port: 5672
+  username: guest
+  password: guest
+server:
+  port: 9090
+# cas server settings
+# cas server settings
+cas:
+  server:
+    host:
+      url: http://localhost:8443/cas
+      login_url: http://localhost:8443/cas/login #CAS服务登录地址
+      logout_url: http://localhost:8443/cas/logout?service=http://localhost:8443/cas #CAS服务登出地址
+
+app:
+  server:
+    host:
+      url: http://localhost:9090 #应用访问地址
+  logout:
+    url: /logout #应用登录地址
+  login:
+    url: /login #应用登出地址

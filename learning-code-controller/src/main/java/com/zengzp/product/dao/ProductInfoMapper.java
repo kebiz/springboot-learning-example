@@ -3,6 +3,7 @@ package com.zengzp.product.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zengzp.product.entity.ProductInfo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -15,4 +16,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Mapper
 public interface ProductInfoMapper extends BaseMapper<ProductInfo> {
+    @Update("UPDATE product_info SET product_name=#{productName},product_price=#{productPrice},product_status=#{productStatus} WHERE product_id =#{productId}")
+    void updateProduct(ProductInfo productInfo);
 }

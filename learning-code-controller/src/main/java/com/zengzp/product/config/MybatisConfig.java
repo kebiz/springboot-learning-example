@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @author ：zengzhipeng
@@ -13,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
  * @version: 1.0$
  */
 @Configuration
+@EnableAspectJAutoProxy(exposeProxy = true,proxyTargetClass = true)
 public class MybatisConfig {
     /**
      *      * mybatis-plus SQL执行效率插件【生产环境可以关闭】

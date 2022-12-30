@@ -1,5 +1,6 @@
 package com.zengzp.product.config;
 
+import com.zengzp.product.filter.UserTokenFilter;
 import com.zengzp.product.shrio.realm.MyRealm;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
+import javax.servlet.Filter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -80,6 +82,8 @@ public class ShiroRealmConfig {
         shiroFilterFactoryBean.setUnauthorizedUrl("/403");
 //拦截器, 配置不会被拦截的链接 顺序判断
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
+       // Map<String, Filter> filters= new LinkedHashMap<>();
+      //  filters.put("authc", userTokenFilter());
         //所有匿名用户均可访问到Controller层的该方法下
         filterChainDefinitionMap.put("/login", "anon");
         filterChainDefinitionMap.put("/userLogin", "anon");
@@ -92,6 +96,7 @@ public class ShiroRealmConfig {
         filterChainDefinitionMap.put("/**", "authc");
         //user表示配置记住我或认证通过可以访问的地址
         //filterChainDefinitionMap.put("/**", "user");
+        //shiroFilterFactoryBean.setFilters(filters);
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
     }
@@ -151,5 +156,11 @@ public class ShiroRealmConfig {
         DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
         defaultAdvisorAutoProxyCreator.setProxyTargetClass(true);
         return defaultAdvisorAutoProxyCreator;
+    }
+    @Bean
+    public UserTokenFilter userTokenFilter()
+    {
+        UserTokenFilter userTokenFilter = new UserTokenFilter();
+        return userTokenFilter;
     }
 }

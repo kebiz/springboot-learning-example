@@ -12,9 +12,6 @@ import com.zengzp.product.vo.ResultVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Recover;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,14 +60,17 @@ public class ProductInfoController {
          productInfoService.saveOrUpdate(productInfo);
     }
     @PostMapping("/findProductInfo")
-    public IPage<ProductInfo> findProductInfoPage(PageParam<ProductInfo> pageParam,@RequestParam("productName") String productName){
+    public IPage<ProductInfo> findProductInfoPage(PageParam<ProductInfo> pageParam,@RequestParam(value = "productName",required = false) String productName){
         QueryWrapper<ProductInfo> queryWrapper1 = new QueryWrapper<>();
-        queryWrapper1.lambda().like(ProductInfo::getProductName,productName);
+        queryWrapper1.lambda().like(ProductInfo::getProductName,productName==null?"":productName);
         return productInfoService.page(pageParam.createPage(),queryWrapper1);
     }
    @PostMapping("/retrySubmit")
     public void retrySubmit() throws  Exception{
        productInfoService.retrySubmit(500);
     }
-
+    @PostMapping("/batchUpdateProductInfo")
+    public void batchUpdateProductInfo() throws InterruptedException {
+        productInfoService.updateStudentWithThreads();
+    }
 }

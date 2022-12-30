@@ -27,6 +27,7 @@ public class MyRedisConfig extends RedisConfig {
     @Bean
     public RedissonClient createRedisson(){
         Config config=new Config();
+        config.setCodec(new org.redisson.client.codec.StringCodec());
         config.useSingleServer().setAddress("redis://"+host+":"+port);
        return Redisson.create(config);
     }

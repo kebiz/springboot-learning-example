@@ -35,7 +35,6 @@ public class ControllerReponseAdvice implements ResponseBodyAdvice<Object> {
         if(methodParameter.getGenericParameterType().equals(String.class)){
             ObjectMapper objectMapper=new ObjectMapper();
             try {
-                int i=1/0;
                 return objectMapper.writeValueAsString(ResultVo.success(o));
 
             } catch (Exception e) {

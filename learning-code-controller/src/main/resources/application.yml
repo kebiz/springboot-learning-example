@@ -20,10 +20,17 @@ spring:
       suffix: .jsp
   application:
     name: learningweb
+  rabbitmq:
+      host: localhost
+      port: 5672
+      username: guest
+      password: guest
   datasource:
     druid:
         connection-init-sqls: set names utf8mb4
         driver-class-name: com.mysql.jdbc.Driver
+        test-on-borrow: true
+        test-while-idle: true
     type: com.alibaba.druid.pool.DruidDataSource
     url: jdbc:mysql://${DATASOURCE_HOST:10.1.20.229}:${DATASOURCE_PORT:3306}/${DATASOURCE_DATABASE_NAME:dblog}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true&useLegacyDatetimeCode=false
     username: ${DATASOURCE_USERNAME:root}

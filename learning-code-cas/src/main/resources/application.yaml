@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: elasticsearch-app
+  main:
+    allow-bean-definition-overriding: true
+server:
+  port: 9091
+# cas server settings
+cas:
+  server:
+    host:
+      url: http://localhost:8443/cas
+      login_url: http://localhost:8443/cas/login #CAS服务登录地址
+      logout_url: http://localhost:8443/cas/logout?service=http://localhost:8443/cas #CAS服务登出地址
+
+app:
+  server:
+    host:
+      url: http://localhost:9091 #应用访问地址
+  logout:
+      url: /logout #应用登录地址
+  login:
+      url: /login #应用登出地址
