@@ -1,6 +1,8 @@
-package com.zengzp.cart.util;
+package com.learning.code.common.util;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;

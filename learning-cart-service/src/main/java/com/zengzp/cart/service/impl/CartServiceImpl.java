@@ -1,16 +1,17 @@
 package com.zengzp.cart.service.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
+
+import com.learning.code.common.model.OrderItem;
+import com.learning.dubbo.CartService;
 import com.zengzp.cart.contant.CacheKey;
-import com.zengzp.cart.entity.OrderItem;
 import com.zengzp.cart.entity.Preferential;
 import com.zengzp.cart.entity.Sku;
-import com.zengzp.cart.service.CartService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -23,7 +24,8 @@ import java.util.stream.Collectors;
  * @modified By：
  * @version: 1$
  */
-@Service
+@Service(version = "1.0.0",timeout = 10000,interfaceClass = CartService.class)
+@Component
 @Slf4j
 public class CartServiceImpl implements CartService {
     @Autowired
@@ -194,7 +196,7 @@ public class CartServiceImpl implements CartService {
                     Preferential   preferential=option.get();
                     if ("1".equals(preferential.getType())) {
                         //类型为1代表优惠金额翻倍
-                        BigDecimal divide = BigDecimal.valueOf(money).divide(BigDecimal.valueOf(preferential.getBuyMoney()));
+                        BigDecimal divide = BigDecimal.valueOf(money).divide(BigDecimal.valueOf(preferential.getBuyMoney()),BigDecimal.ROUND_CEILING);
                         int intValue = divide.intValue();
                         BigDecimal preMoney = BigDecimal.valueOf(preferential.getPreMoney()).multiply(BigDecimal.valueOf(intValue));
                         totalMoney = totalMoney.add(preMoney);

@@ -1,5 +1,8 @@
 package com.zengzp.cart.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,8 +19,10 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@TableName(value = "t_spu")
 public class Spu implements Serializable {
     //ID
+    @TableId(value = "id",type = IdType.AUTO)
     private long id;
     //名称
     private String name;
@@ -48,7 +53,7 @@ public class Spu implements Serializable {
     //介绍
     private  String introduction;
     //规格列表
-    private String spacItems;
+    private String specItems;
     //参数列表
     private String paraItems;
     //销量

@@ -1,4 +1,4 @@
-package com.zengzp.cart.entity;
+package com.learning.code.common.model;
 
 
 import lombok.Data;
@@ -16,5 +16,5 @@ import java.util.List;
 @Data
 public class OrderVO implements Serializable {
     private String userName;
-    private List<Orders> ordersList;
+    private List<OrderDto> orderDtoList;
 }

@@ -2,5 +2,38 @@ spring:
   redis:
     host: localhost
     port: 6379
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    publisher-returns: true
+    publisher-confirm-type: correlated
+  datasource:
+    druid:
+      connection-init-sqls: set names utf8mb4
+      driver-class-name: com.mysql.jdbc.Driver
+      test-on-borrow: true
+      test-while-idle: true
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://${DATASOURCE_HOST:10.1.20.229}:${DATASOURCE_PORT:3306}/${DATASOURCE_DATABASE_NAME:dblog}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true&useLegacyDatetimeCode=false
+    username: ${DATASOURCE_USERNAME:root}
+    password: ${DATASOURCE_PASSWORD:root}
 server:
-  port: 9093
+  port: 9095
+
+dubbo:
+  application:
+    name: provider-server
+  registry:
+    address: zookeeper://127.0.0.1:2181
+  protocol:
+    name: dubbo
+    port: 20880
+  scan:
+    base-packages: com.zengzp.cart
+
+mybatis-plus:
+  #mapper-locations: classpath*:/mappings/**/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl

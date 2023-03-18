@@ -1,10 +1,13 @@
 package com.zengzp.product;
 
+import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Import;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -18,8 +21,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @EnableRetry
 @EnableScheduling
+@EnableDubbo
 @EnableTransactionManagement
 @EnableAspectJAutoProxy(proxyTargetClass=true,exposeProxy=true)
+@Import(value = com.learning.code.common.util.IdWorker.class)
 @SpringBootApplication
 public class ProductInfoApplication extends SpringBootServletInitializer {
     @Override

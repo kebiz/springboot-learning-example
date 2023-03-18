@@ -2,6 +2,7 @@ package com.zengzp.product.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.learning.dubbo.CartService;
 import com.zengzp.product.annotation.NoRepeatSubmit;
 import com.zengzp.product.annotation.NotRestControllerAdvice;
 import com.zengzp.product.entity.ProductInfo;
@@ -9,11 +10,15 @@ import com.zengzp.product.entity.param.PageParam;
 import com.zengzp.product.service.ProductInfoService;
 import com.zengzp.product.vo.ProductInfoVO;
 import com.zengzp.product.vo.ResultVo;
+import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author ：zengzhipeng
@@ -29,6 +34,8 @@ public class ProductInfoController {
     private ProductInfoService productInfoService;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Reference(version = "1.0.0")
+    private CartService cartService;
     @PostMapping("/productInfo")
     public ProductInfo getByVo(@Validated ProductInfoVO productInfoVO){
         QueryWrapper<ProductInfo> queryWrapper1 = new QueryWrapper<>();
@@ -72,5 +79,10 @@ public class ProductInfoController {
     @PostMapping("/batchUpdateProductInfo")
     public void batchUpdateProductInfo() throws InterruptedException {
         productInfoService.updateStudentWithThreads();
+    }
+
+    @GetMapping("/getCartInfo")
+    public List<Map<String,Object>> getCartInfo() throws InterruptedException {
+       return cartService.findCartList("userName");
     }
 }

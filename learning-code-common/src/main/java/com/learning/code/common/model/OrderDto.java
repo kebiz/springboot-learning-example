@@ -1,4 +1,4 @@
-package com.zengzp.cart.entity;
+package com.learning.code.common.model;
 
 
 import lombok.Data;
@@ -14,7 +14,7 @@ import java.util.List;
  * @version: 1$
  */
 @Data
-public class Orders implements Serializable {
+public class OrderDto implements Serializable {
     private Order order;
     private List<OrderItem> orderItems;
 }

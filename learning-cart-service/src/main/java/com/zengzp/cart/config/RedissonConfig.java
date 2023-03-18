@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
  * @version: 1.0$
  */
 @Configuration
-public class RedissonConfig extends RedisConfig {
+public class RedissonConfig {
     @Value("${spring.redis.host}")
     private String host;
     @Value("${spring.redis.port}")

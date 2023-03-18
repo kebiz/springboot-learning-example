@@ -16,6 +16,7 @@ import sun.misc.Request;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,13 +39,18 @@ public class UserCartController {
     public Car findCartList(@RequestParam("userId") long userId) {
      //根据用户ID查询用户类型
         //这里省略
-        String catagory="vip";
+       /* String catagory="vip";
         Map<Long, Integer> item = new HashMap();
         item.put(1L,30);
         item.put(2L,40);
         item.put(4L,50);
-        AbstractUserApi abstractUserApi =(AbstractUserApi) applicationContext.getBean(catagory+"UserService");
-        return abstractUserApi.process(userId,item);
+        AbstractUserApi abstractUserApi =(AbstractUserApi) applicationContext.getBean(catagory+"UserService");*/
+        Car car=new Car();
+        car.setTotalItemPrice(BigDecimal.valueOf(56.00));
+        car.setTotalDiscount(BigDecimal.valueOf(56.123));
+        car.setTotalDeliveryPrice(BigDecimal.valueOf(56.80));
+        car.setPayPrice(BigDecimal.valueOf(56.890));
+        return car;
     }
     @RequestMapping("/createUser")
     public String creareUser(HttpServletRequest httpServletRequest) {

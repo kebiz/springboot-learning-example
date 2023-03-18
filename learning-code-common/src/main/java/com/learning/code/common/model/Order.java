@@ -1,5 +1,10 @@
-package com.zengzp.cart.entity;
+package com.learning.code.common.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.learning.code.common.util.JsonSerializerUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,20 +22,26 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@TableName("t_order")
 public class Order implements Serializable {
     //订单ID
+    @TableId(value = "id",type = IdType.INPUT)
     private Long id;
     //用户名
     private String userName;
     //数量
     private Integer totalNum;
     //总金额
+    @JsonSerialize(using = JsonSerializerUtils.class)
     private Double totalMoney;
     //优惠金额
+    @JsonSerialize(using = JsonSerializerUtils.class)
     private  Double preMoney;
     //支付金额
+    @JsonSerialize(using = JsonSerializerUtils.class)
     private Double payMoney;
     //邮费
+    @JsonSerialize(using = JsonSerializerUtils.class)
     private Double postFee;
     //支付类型 1：在线支付  0：货到付款
     private String payType;

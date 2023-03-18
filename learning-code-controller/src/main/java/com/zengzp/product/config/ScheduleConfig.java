@@ -1,7 +1,12 @@
 package com.zengzp.product.config;
 
+import com.learning.code.common.model.MessageSendLog;
+import com.learning.dubbo.MessageSendLogService;
+import com.zengzp.product.service.OrderService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.Reference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.Trigger;
@@ -14,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author ：zengzhipeng
@@ -31,12 +37,16 @@ public class ScheduleConfig implements SchedulingConfigurer {
     private String cron;
 
     private long timer;
+    @Autowired
+    private OrderService orderService;
     @Override
     public void configureTasks(ScheduledTaskRegistrar scheduledTaskRegistrar) {
         scheduledTaskRegistrar.addTriggerTask(new Runnable() {
             @Override
             public void run() {
-                log.info("tasking Current time:{}", LocalDateTime.now());
+                log.info("====定时任务开始重发===");
+                orderService.doMessageSendLog();
+
             }
         }, new Trigger() {
             @Override

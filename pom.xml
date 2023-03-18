@@ -17,6 +17,8 @@
         <module>learning-code-cas</module>
         <module>spring-security-cas-master</module>
         <module>learning-cart-service</module>
+        <module>learning-code-common</module>
+        <module>springboot-dubbo-interface</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

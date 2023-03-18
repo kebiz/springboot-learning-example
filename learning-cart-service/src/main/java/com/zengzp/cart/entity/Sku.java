@@ -1,5 +1,6 @@
 package com.zengzp.cart.entity;
 
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,8 +18,10 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@TableName(value = "t_sku")
 public class Sku implements Serializable {
     //商品id
+    @TableId(value = "id",type = IdType.AUTO)
     private  long id;
     //名称
     private String name;
@@ -53,9 +56,14 @@ public class Sku implements Serializable {
     //状态 正常--下架--删除
     private String status;
     //创建时间
-    private Date createDate;
+    private Date createTime;
     //更新时间
-    private Date updateDate;
+    private Date updateTime;
+    /**
+     * 版本号
+     */
+    @Version
+    private Long version;
 
 
 

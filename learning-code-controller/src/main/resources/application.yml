@@ -8,7 +8,6 @@ server:
     enabled: true
   http2:
     enabled: true
-
 spring:
   profiles:
     active: dev
@@ -25,6 +24,8 @@ spring:
       port: 5672
       username: guest
       password: guest
+      publisher-returns: true
+      publisher-confirm-type: correlated
   datasource:
     druid:
         connection-init-sqls: set names utf8mb4
@@ -66,3 +67,15 @@ mybatis-plus:
         logic-delete-value: "Y" # 逻辑已删除值(默认为 Y)
         logic-not-delete-value: "N" # 逻辑未删除值(默认为 N)
     mapper-locations: classpath*:mapper/**/*.xml
+dubbo:
+  application:
+    name: customer-server
+  registry:
+        address: zookeeper://127.0.0.1:2181
+  protocol:
+        name: dubbo
+        port: 20880
+  scan:
+        base-packages: com.zengzp.product
+  consumer:
+    check: false
