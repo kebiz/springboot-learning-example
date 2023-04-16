@@ -9,6 +9,8 @@ import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.RabbitListenerConfigurer;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistrar;
+import org.springframework.amqp.rabbit.retry.MessageRecoverer;
+import org.springframework.amqp.rabbit.retry.RepublishMessageRecoverer;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -119,4 +121,33 @@ public class RabbitConfig implements RabbitListenerConfigurer {
                 .with(OrderQueueEnum.QUEUE_SYN_STOCK_DB.getRouteKey());
     }
 
+    /**
+     * 异常消息列所绑定的交换机
+     */
+    @Bean
+    DirectExchange errorDirect() {
+        return (DirectExchange) ExchangeBuilder
+                .directExchange(OrderConstant.ERROR_EXCHANGE_NAME)
+                .durable(true)
+                .build();
+    }
+    @Bean
+    public Queue errorQueue() {
+        return new Queue(OrderQueueNameConstant.ERROR_QUEUE, true);
+    }
+    /**
+     * 将库存同步队列绑定到交换机
+     */
+    @Bean
+    Binding errorBinding(DirectExchange errorDirect, Queue errorQueue) {
+        return BindingBuilder
+                .bind(errorQueue)
+                .to(errorDirect)
+                .with(OrderQueueEnum.QUEUE_ERROR.getRouteKey());
+    }
+
+    @Bean
+    MessageRecoverer republishMessageRecoverer(RabbitTemplate rabbitTemplate){
+        return  new RepublishMessageRecoverer(rabbitTemplate,OrderConstant.ERROR_EXCHANGE_NAME,OrderQueueEnum.QUEUE_ERROR.getRouteKey());
+    }
 }

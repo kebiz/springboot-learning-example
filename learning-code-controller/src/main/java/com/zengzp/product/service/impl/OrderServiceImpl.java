@@ -89,14 +89,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
             //发送同步库存数据至DB的消息
             sender.sendSynStockDBMessage(new SynStockDBMessage(dto.getOrder().getId(),stockDtos));
         }catch (Exception ex){
-            OrderFailMessage failMessage = new OrderFailMessage().stockFail(dto.getOrder().getId());
-            sender.sendCreateOrderFailMessage(failMessage);
+           // OrderFailMessage failMessage = new OrderFailMessage().stockFail(dto.getOrder().getId());
+            //sender.sendCreateOrderFailMessage(failMessage);
             ex.printStackTrace();
             log.error("订单创建执行失败:{}",ex.getMessage());
             isSuc=false;
-        }
-        if(isSuc){
-
         }
 
         return isSuc;

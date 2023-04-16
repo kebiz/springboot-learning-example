@@ -44,8 +44,8 @@ public class ScheduleConfig implements SchedulingConfigurer {
         scheduledTaskRegistrar.addTriggerTask(new Runnable() {
             @Override
             public void run() {
-                log.info("====定时任务开始重发===");
-                orderService.doMessageSendLog();
+                //log.info("====定时任务开始重发===");
+                //orderService.doMessageSendLog();
 
             }
         }, new Trigger() {

@@ -12,7 +12,7 @@ public interface MessageSendLogService  {
      * @param msgContent
      * @param sendStatus
      */
-    void saveMsgSendLog(Long msgId,String msgContent,String sendStatus);
+    void saveMsgSendLog(String msgId,String msgContent,String sendStatus);
 
     /**
      * 查询消息发送失败的记录

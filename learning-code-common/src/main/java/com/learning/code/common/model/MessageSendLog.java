@@ -27,7 +27,7 @@ public class MessageSendLog implements Serializable {
     /**
      * 业务ID
      */
-    private Long msgId;
+    private String msgId;
     /**
      *消息内容
      */

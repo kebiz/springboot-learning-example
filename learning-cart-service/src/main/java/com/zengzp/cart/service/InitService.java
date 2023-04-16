@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.zengzp.cart.contant.CacheKey;
 import com.zengzp.cart.entity.Preferential;
+
 import com.zengzp.cart.entity.Sku;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RMap;
@@ -40,6 +41,7 @@ public class InitService implements InitializingBean {
         //preferentialToRedis();
         //skuToRedis();
         //getSkuStock();
+        //invokeSkuToMysql();
     }
 
     /**
@@ -113,5 +115,35 @@ public class InitService implements InitializingBean {
             log.info("=====sku:{}",sku);
         }
        // redisTemplate.delete(CacheKey.SKU_LIST.toString());
+    }
+
+    private void invokeSkuToMysql(){
+        log.info("===开始预热sku至MYSQL===");
+        Sku sku=null;
+        List<Sku> skus=new ArrayList<>();
+        for (int i=1;i<=100;i++){
+            sku=new Sku();
+            sku.setId(i);
+            sku.setAlertNum(100);
+            sku.setBrandName("华为");
+            sku.setCategoryId(i);
+            sku.setCategoryName("手机");
+            sku.setImage("=====image url=======");
+            sku.setImages("=====images url=======");
+            sku.setName("meta 40 pro--->"+i);
+            sku.setNum(100);
+            sku.setPrice(100.00);
+            sku.setSn(RandomUtil.randomNumbers(10));
+            if(i%2==0) {
+                sku.setSpec("5G 黑色 256G");
+            }else {
+                sku.setSpec("5G 白色 256G");
+            }
+            sku.setSpuId(i);
+            sku.setStatus("1");
+            skus.add(sku);
+        }
+        skuService.saveBatch(skus);
+        log.info("===结束预热sku至MYSQL===");
     }
 }

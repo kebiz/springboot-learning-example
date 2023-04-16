@@ -1,12 +1,15 @@
 package com.zengzp.product.mq;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.json.JSONUtil;
 import com.learning.code.common.contant.OrderQueueNameConstant;
 import com.learning.code.common.model.CreateOrderMessage;
 import com.learning.code.common.model.OrderFailMessage;
+import com.learning.dubbo.MessageSendLogService;
 import com.rabbitmq.client.Channel;
 import com.zengzp.product.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.Reference;
 import org.redisson.api.RScript;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
@@ -30,44 +33,62 @@ import java.util.*;
 public class OrderListener {
     @Autowired
     private OrderService orderService;
+    @Reference(version = "1.1")
+    private MessageSendLogService messageSendLogService;
     @RabbitListener(queues = OrderQueueNameConstant.ORDER_CREATE)
     public void createOrder(CreateOrderMessage orderMessage, Channel channel, Message message) throws IOException {
-        log.info("==========生产================收到订单创建消息:deliveryTag{},当前时间{},消息内容{}.", message.getMessageProperties().getDeliveryTag(),
+        log.info("==========生产================收到订单创建消息:CorrelationId{},当前时间{},消息内容{}.", message.getMessageProperties().getCorrelationId(),
                 DateUtil.now(),
                 orderMessage.toString());
-        try {
+       /*try {*/
             //减库存 下订单 写入订单
-
+        System.out.print(1/0);
+/*
             Boolean succ = orderService.createOrder(orderMessage.getOrderDto());
             if (succ) {
                 log.info("订单创建执行成功: deliveryTag{}", message.getMessageProperties().getDeliveryTag());
                 channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
             } else {
                 throw new RuntimeException("订单创建失败");
-            }
-        } catch (Exception e) {
+            }*/
+       /* } catch (Exception e) {
             log.error(e.getMessage(), e);
             log.info("订单创建执行失败: deliveryTag{}", message.getMessageProperties().getDeliveryTag());
 
             channel.basicReject(message.getMessageProperties().getDeliveryTag(), false);
-        }
+        }*/
     }
 
-    @RabbitListener(queues = OrderQueueNameConstant.ORDER_CREATE_FAIL)
-    public void createFailOrder(OrderFailMessage orderFailMessage, Channel channel, Message message) throws IOException {
-        log.info("=========生产==========收到订单创建失败消息:deliveryTag{},当前时间{},消息内容{}.", message.getMessageProperties().getDeliveryTag(),
+    @RabbitListener(queues = OrderQueueNameConstant.ERROR_QUEUE)
+    public void dealErrorMessage(CreateOrderMessage createOrderMessage, Channel channel, Message message) throws IOException {
+        log.info("=========生产==========收到订单创建失败消息:CorrelationId{},当前时间{},消息内容{}.", message.getMessageProperties().getCorrelationId(),
                 DateUtil.now(),
-                orderFailMessage.toString());
+                createOrderMessage.toString());
         try {
-           if(orderService.returnStock(orderFailMessage.getOrderId())){
+            //记录错误日志信息
+            String keyUpper=null;
+            Map<String, Object> headers = message.getMessageProperties().getHeaders();
+            for (String key : headers.keySet()) {
+                if("spring_listener_return_correlation".equals(key)){
+                    if(headers.get(key)!=null){
+                        keyUpper = (String)headers.get(key);
+                    }
+
+                }
+
+            }
+            messageSendLogService.saveMsgSendLog(keyUpper, JSONUtil.toJsonPrettyStr(createOrderMessage),"-2");
+
+            log.info("记录错误日志成功: msgId{}", keyUpper);
+            /* if(orderService.returnStock(createOrderMessage.getOrderId())){
                log.info("订单回退执行成功: deliveryTag{}", message.getMessageProperties().getDeliveryTag());
                channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
            }else {
                throw new RuntimeException("订单回退报错");
-           }
+           }*/
         }catch (Exception ex){
             log.error(ex.getMessage(), ex);
-            log.info("订单回退执行失败: deliveryTag{}", message.getMessageProperties().getDeliveryTag());
+            log.info("处理异常队列消息失败: deliveryTag{},发送邮件到管理员", message.getMessageProperties().getDeliveryTag());
 
             channel.basicReject(message.getMessageProperties().getDeliveryTag(), false);
         }

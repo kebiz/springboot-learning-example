@@ -19,7 +19,7 @@ import java.util.List;
  * @modified By：
  * @version: 1$
  */
-@Service
+@Service(version = "1.1")
 @Slf4j
 public class MessageSendLogServiceImpl extends ServiceImpl<MessageSendLogMapper,MessageSendLog> implements MessageSendLogService {
 
@@ -31,8 +31,8 @@ public class MessageSendLogServiceImpl extends ServiceImpl<MessageSendLogMapper,
      * @param sendStatus
      */
     @Override
-    public void saveMsgSendLog(Long msgId, String msgContent, String sendStatus) {
-        Assert.notEmpty(new Long[]{msgId},"业务ID不能为空");
+    public void saveMsgSendLog(String msgId, String msgContent, String sendStatus) {
+        Assert.notEmpty(msgId,"业务ID不能为空");
         Assert.notEmpty(msgContent,"消息内容不能为空");
         Assert.notEmpty(sendStatus,"发送状态不能为空");
         QueryWrapper<MessageSendLog> queryWrapper = new QueryWrapper<>();

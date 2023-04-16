@@ -16,4 +16,8 @@ public class OrderConstant {
      * 订单延迟队列交换机
      */
     public  static final String DELAY_EXCHANGE_NAME = "learning.order.delay.direct";
+    /**
+     * 异常默认交换机
+     */
+    public  static final String ERROR_EXCHANGE_NAME = "learning.order.error.direct";
 }

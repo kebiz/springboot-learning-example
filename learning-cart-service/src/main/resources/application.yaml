@@ -7,8 +7,14 @@ spring:
     port: 5672
     username: guest
     password: guest
-    publisher-returns: true
-    publisher-confirm-type: correlated
+
+    listener:
+      simple:
+        retry:
+          max-attempts: 3
+          enabled: true
+        prefetch: 1
+        acknowledge-mode: auto
   datasource:
     druid:
       connection-init-sqls: set names utf8mb4
@@ -16,9 +22,9 @@ spring:
       test-on-borrow: true
       test-while-idle: true
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://${DATASOURCE_HOST:10.1.20.229}:${DATASOURCE_PORT:3306}/${DATASOURCE_DATABASE_NAME:dblog}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true&useLegacyDatetimeCode=false
+    url: jdbc:mysql://${DATASOURCE_HOST:127.0.0.1}:${DATASOURCE_PORT:3306}/${DATASOURCE_DATABASE_NAME:dblog}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true&useLegacyDatetimeCode=false
     username: ${DATASOURCE_USERNAME:root}
-    password: ${DATASOURCE_PASSWORD:root}
+    password: ${DATASOURCE_PASSWORD:root123}
 server:
   port: 9095
 

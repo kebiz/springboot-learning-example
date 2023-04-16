@@ -25,5 +25,9 @@ public class OrderQueueNameConstant {
      * 同步库存
      */
     public static final String SYN_STOCK_DB = "learning.syn.stock.db";
+    /**
+     * 异常消息队列
+     */
+    public static final String ERROR_QUEUE = "error_queue";
 
 }

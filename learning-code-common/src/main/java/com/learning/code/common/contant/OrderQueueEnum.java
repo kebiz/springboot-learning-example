@@ -24,6 +24,11 @@ public enum OrderQueueEnum {
      */
     QUEUE_ORDER_AUTO_CANCEL(OrderConstant.DELAY_EXCHANGE_NAME, OrderQueueNameConstant.ORDER_AUTO_CANCEL,
             "gruul.order.auto.cancel"),
+    /**
+     * 异常队列
+     */
+    QUEUE_ERROR(OrderConstant.ERROR_EXCHANGE_NAME, OrderQueueNameConstant.ERROR_QUEUE,
+            "error"),
     ;
 
     /**
