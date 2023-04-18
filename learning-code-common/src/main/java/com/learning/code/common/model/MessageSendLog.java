@@ -29,6 +29,22 @@ public class MessageSendLog implements Serializable {
      */
     private String msgId;
     /**
+     * 消息exchange
+     */
+    private String msgExchange;
+    /**
+     * 消息路由
+     */
+    private String msgRouteKey;
+    /**
+     *队列模式  direct  delay延迟队列
+     */
+    private String queueType;
+    /**
+     * 消息延迟时间
+     */
+    private long queueTtl;
+    /**
      *消息内容
      */
     private String msgContent;
@@ -44,6 +60,10 @@ public class MessageSendLog implements Serializable {
      * 创建时间
      */
     private Date createTime;
+    /**
+     * 更新时间
+     */
+    private Date updateTime;
 
 
 }

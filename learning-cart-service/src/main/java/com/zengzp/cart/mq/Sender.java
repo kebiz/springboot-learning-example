@@ -1,10 +1,13 @@
 package com.zengzp.cart.mq;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.json.JSONUtil;
 import com.learning.code.common.contant.OrderQueueEnum;
 import com.learning.code.common.model.BaseOrderMessage;
 import com.learning.code.common.model.CreateOrderMessage;
+import com.learning.code.common.model.MessageSendLog;
 import com.learning.code.common.model.OrderFailMessage;
+import com.learning.dubbo.MessageSendLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
@@ -12,6 +15,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 
 /**
@@ -26,8 +30,8 @@ import java.time.LocalDateTime;
 public class Sender {
     @Autowired
     private RabbitTemplate rabbitTemplate;
-
-
+    @Resource
+    private MessageSendLogService messageSendLogService;
     /**
      * 订单创建
      *
@@ -53,6 +57,14 @@ public class Sender {
     }
     private void convertAndSend(OrderQueueEnum queue, Object message) {
         CorrelationData correlationData = new CorrelationData(IdUtil.fastSimpleUUID());
+        MessageSendLog messageSendLog=new MessageSendLog();
+        messageSendLog.setMsgId(correlationData.getId());
+        messageSendLog.setMsgContent(JSONUtil.toJsonPrettyStr(message));
+        messageSendLog.setMsgExchange(queue.getExchange());
+        messageSendLog.setMsgRouteKey(queue.getRouteKey());
+        messageSendLog.setQueueType("direct");
+        messageSendLog.setSendStatus("0");
+        messageSendLogService.saveMsgSendLog(messageSendLog);
         rabbitTemplate.convertAndSend(queue.getExchange(), queue.getRouteKey(), message, correlationData);
     }
 

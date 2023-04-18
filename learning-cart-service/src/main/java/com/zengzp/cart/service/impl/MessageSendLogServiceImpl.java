@@ -10,6 +10,8 @@ import com.learning.dubbo.MessageSendLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.Service;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,34 +21,48 @@ import java.util.List;
  * @modified By：
  * @version: 1$
  */
-@Service(version = "1.1")
+@Service(version = "1.2")
 @Slf4j
 public class MessageSendLogServiceImpl extends ServiceImpl<MessageSendLogMapper,MessageSendLog> implements MessageSendLogService {
 
     /**
      * 保存发送日志信息
      *
-     * @param msgId
-     * @param msgContent
-     * @param sendStatus
      */
     @Override
-    public void saveMsgSendLog(String msgId, String msgContent, String sendStatus) {
-        Assert.notEmpty(msgId,"业务ID不能为空");
-        Assert.notEmpty(msgContent,"消息内容不能为空");
-        Assert.notEmpty(sendStatus,"发送状态不能为空");
-        QueryWrapper<MessageSendLog> queryWrapper = new QueryWrapper<>();
-        MessageSendLog messageSendLog = this.getOne(queryWrapper.lambda().eq(MessageSendLog::getMsgId, msgId));
-        if(messageSendLog==null){
-            messageSendLog=new MessageSendLog();
-            messageSendLog.setRetryCount(0);
-        }else {
-            messageSendLog.setRetryCount(messageSendLog.getRetryCount()+1);
-        }
-        messageSendLog.setMsgId(msgId);
-        messageSendLog.setMsgContent(msgContent);
-        messageSendLog.setSendStatus(sendStatus);
+    public void saveMsgSendLog(MessageSendLog messageSendLog) {
+        messageSendLog.setRetryCount(0);
+        messageSendLog.setCreateTime(new Date());
         this.saveOrUpdate(messageSendLog);
+    }
+
+    /**
+     * 更新消息发送状态
+     *
+     * @param msgId
+     * @param status
+     */
+    @Override
+    public void updateMsgStatus(String msgId, String status) {
+        Assert.notEmpty(msgId,"消息ID不能为空");
+        QueryWrapper<MessageSendLog> queryWrapper = new QueryWrapper<>();
+        MessageSendLog log = this.getOne(queryWrapper.lambda().eq(MessageSendLog::getMsgId, msgId));
+        log.setSendStatus(status);
+        log.setUpdateTime(new Date());
+        this.saveOrUpdate(log);
+    }
+
+    /**
+     * 更新消息发送状态
+     *
+     * @param msgId
+     */
+    @Override
+    public void updateMsgRetryCount(String msgId) {
+        QueryWrapper<MessageSendLog> queryWrapper = new QueryWrapper<>();
+        MessageSendLog log = this.getOne(queryWrapper.lambda().eq(MessageSendLog::getMsgId, msgId));
+        log.setRetryCount(log.getRetryCount()+1);
+        this.saveOrUpdate(log);
     }
 
     /**

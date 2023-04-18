@@ -8,12 +8,16 @@ import java.util.List;
 public interface MessageSendLogService  {
     /**
      * 保存发送日志信息
-     * @param msgId
-     * @param msgContent
-     * @param sendStatus
      */
-    void saveMsgSendLog(String msgId,String msgContent,String sendStatus);
-
+    void saveMsgSendLog(MessageSendLog messageSendLog);
+    /**
+     * 更新消息发送状态
+     */
+    void updateMsgStatus(String msgId,String status);
+    /**
+     * 更新消息发送状态
+     */
+    void updateMsgRetryCount(String msgId);
     /**
      * 查询消息发送失败的记录
      * @return
