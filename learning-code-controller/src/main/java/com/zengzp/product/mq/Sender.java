@@ -4,6 +4,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
 import com.learning.code.common.contant.OrderQueueEnum;
 import com.learning.code.common.model.*;
+import com.learning.code.common.util.MessageHelper;
 import com.learning.dubbo.MessageSendLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.Reference;
@@ -70,12 +71,12 @@ public class Sender {
         messageSendLog.setQueueType("direct");
         messageSendLog.setSendStatus("0");
         messageSendLogService.saveMsgSendLog(messageSendLog);
-        rabbitTemplate.convertAndSend(queue.getExchange(), queue.getRouteKey(), message, correlationData);
+        rabbitTemplate.convertAndSend(queue.getExchange(), queue.getRouteKey(), MessageHelper.objToMsg(message), correlationData);
 
     }
     public void retrySend(String exchange,String routeKey, Object message,String msgId) {
         CorrelationData correlationData = new CorrelationData(msgId);
-        rabbitTemplate.convertAndSend(exchange, routeKey, message, correlationData);
+        rabbitTemplate.convertAndSend(exchange, routeKey, MessageHelper.objToMsg(message), correlationData);
 
     }
 

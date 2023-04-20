@@ -146,8 +146,8 @@ public class RabbitConfig implements RabbitListenerConfigurer {
                 .with(OrderQueueEnum.QUEUE_ERROR.getRouteKey());
     }
 
-    @Bean
+   /* @Bean
     MessageRecoverer republishMessageRecoverer(RabbitTemplate rabbitTemplate){
         return  new RepublishMessageRecoverer(rabbitTemplate,OrderConstant.ERROR_EXCHANGE_NAME,OrderQueueEnum.QUEUE_ERROR.getRouteKey());
-    }
+    }*/
 }

@@ -73,8 +73,20 @@ public class MessageSendLogServiceImpl extends ServiceImpl<MessageSendLogMapper,
     @Override
     public List<MessageSendLog> listBySendStatus() {
         QueryWrapper<MessageSendLog> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(MessageSendLog::getSendStatus,"1").le(MessageSendLog::getRetryCount,2);
+        queryWrapper.lambda().eq(MessageSendLog::getSendStatus,"2").le(MessageSendLog::getRetryCount,3);
         List<MessageSendLog> messageSendLogs = this.list(queryWrapper);
         return CollectionUtil.isEmpty(messageSendLogs)?CollectionUtil.newArrayList():messageSendLogs;
+    }
+
+    /**
+     * 根据msgId查询发送日志对象
+     *
+     * @param msgId
+     */
+    @Override
+    public MessageSendLog getMsgSendLogByMsgId(String msgId) {
+        QueryWrapper<MessageSendLog> queryWrapper = new QueryWrapper<>();
+        MessageSendLog log = this.getOne(queryWrapper.lambda().eq(MessageSendLog::getMsgId, msgId));
+        return log;
     }
 }

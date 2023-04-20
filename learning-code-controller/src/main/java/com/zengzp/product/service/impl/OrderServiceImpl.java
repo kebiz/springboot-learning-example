@@ -54,8 +54,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
     public Boolean createOrder(OrderDto dto) {
         Boolean isSuc=true;
         try {
-            int i=2;
-            i=i/0;
+            if(dto==null){
+                throw  new RuntimeException("消息对象为空");
+            }
             //从缓存中获取当前用户的订单信息
             List<OrderItem> cartList=dto.getOrderItems();
             Order order=new Order();
@@ -132,7 +133,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
     public boolean returnStock(Long orderId){
         boolean result=false;
         try {
-            Thread.sleep(5000);
             Set<Map.Entry<Object, Object>> sku_key = redissonClient.getMap("inventory_flow_" + orderId).entrySet();
             StringBuilder sb2 = new StringBuilder();
             List<StockDto> stockDtos=new ArrayList<>();

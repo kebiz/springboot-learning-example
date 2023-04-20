@@ -2,13 +2,19 @@ package com.zengzp.product.mq;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
+import com.learning.code.common.consumer.BaseConsumer;
 import com.learning.code.common.contant.OrderQueueNameConstant;
 import com.learning.code.common.model.CreateOrderMessage;
+import com.learning.code.common.model.MessageSendLog;
 import com.learning.code.common.model.OrderFailMessage;
+import com.learning.code.common.proxy.BaseConsumerProxy;
+import com.learning.code.common.util.MessageHelper;
 import com.learning.dubbo.MessageSendLogService;
 import com.rabbitmq.client.Channel;
+import com.zengzp.product.mq.consumer.OrderConsumer;
 import com.zengzp.product.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.asm.Advice;
 import org.apache.dubbo.config.annotation.Reference;
 import org.redisson.api.RScript;
 import org.redisson.api.RedissonClient;
@@ -32,32 +38,19 @@ import java.util.*;
 @Slf4j
 @Component
 public class OrderListener {
-    @Autowired
-    private OrderService orderService;
-    @Reference(version = "1.1")
+    @Reference(version = "1.2")
     private MessageSendLogService messageSendLogService;
+    @Autowired
+    private OrderConsumer orderConsumer;
     @RabbitListener(queues = OrderQueueNameConstant.ORDER_CREATE)
-    public void createOrder(CreateOrderMessage orderMessage, CorrelationData correlationData,Channel channel, Message message) throws IOException {
-        log.info("==========生产================收到订单创建消息:CorrelationId{},当前时间{},消息内容{}.", message.getMessageProperties().getCorrelationId(),
+    public void createOrder(Channel channel, Message message) throws IOException {
+        log.info("==========生产================收到订单创建消息DeliveryTag:{},当前时间{},消息内容{}.", message.getMessageProperties().getDeliveryTag(),
                 DateUtil.now(),
-                orderMessage.toString());
-       try {
-           //判断幂等性
-
-            //减库存 下订单 写入订单
-            System.out.print(1/0);
-            Boolean succ = orderService.createOrder(orderMessage.getOrderDto());
-            if (succ) {
-                log.info("订单创建执行成功: deliveryTag{}", message.getMessageProperties().getDeliveryTag());
-                messageSendLogService.updateMsgStatus(correlationData.getId(),"3");
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
-            } else {
-                throw new RuntimeException("订单创建失败");
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            log.info("订单创建执行失败: deliveryTag{}", message.getMessageProperties().getDeliveryTag());
-            channel.basicNack(message.getMessageProperties().getDeliveryTag(), false,true);
+                MessageHelper.msgToObj(message,CreateOrderMessage.class));
+        BaseConsumerProxy baseConsumerProxy = new BaseConsumerProxy(orderConsumer, messageSendLogService);
+        BaseConsumer proxy = (BaseConsumer) baseConsumerProxy.getProxy();
+        if (null != proxy) {
+            proxy.consume(message, channel);
         }
     }
 

@@ -23,4 +23,8 @@ public interface MessageSendLogService  {
      * @return
      */
     List<MessageSendLog> listBySendStatus();
+    /**
+     * 根据msgId查询发送日志对象
+     */
+    MessageSendLog getMsgSendLogByMsgId(String msgId);
 }

@@ -7,6 +7,7 @@ import com.learning.code.common.model.BaseOrderMessage;
 import com.learning.code.common.model.CreateOrderMessage;
 import com.learning.code.common.model.MessageSendLog;
 import com.learning.code.common.model.OrderFailMessage;
+import com.learning.code.common.util.MessageHelper;
 import com.learning.dubbo.MessageSendLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.MessagePostProcessor;
@@ -65,12 +66,12 @@ public class Sender {
         messageSendLog.setQueueType("direct");
         messageSendLog.setSendStatus("0");
         messageSendLogService.saveMsgSendLog(messageSendLog);
-        rabbitTemplate.convertAndSend(queue.getExchange(), queue.getRouteKey(), message, correlationData);
+        rabbitTemplate.convertAndSend(queue.getExchange(), queue.getRouteKey(), MessageHelper.objToMsg(message), correlationData);
     }
 
     private void convertAndSend(OrderQueueEnum queue, Object message, MessagePostProcessor messagePostProcessor) {
         CorrelationData correlationData = new CorrelationData(IdUtil.fastSimpleUUID());
-        rabbitTemplate.convertAndSend(queue.getExchange(), queue.getRouteKey(), message, messagePostProcessor,
+        rabbitTemplate.convertAndSend(queue.getExchange(), queue.getRouteKey(), MessageHelper.objToMsg(message), messagePostProcessor,
                 correlationData);
     }
 }
