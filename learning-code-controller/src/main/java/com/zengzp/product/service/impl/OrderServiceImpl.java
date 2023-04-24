@@ -16,6 +16,7 @@ import org.apache.dubbo.config.annotation.Reference;
 import org.redisson.api.RScript;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +39,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
     private Sender sender;
     @Reference(version = "1.0.0")
     private CartService cartService;
-    @Reference
+    @Reference(version = "1.2")
     private MessageSendLogService messageSendLogService;
     @Autowired
     private RedissonClient redissonClient;
@@ -53,8 +54,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
     public Boolean createOrder(OrderDto dto) {
         Boolean isSuc=true;
         try {
-            int i=2;
-            i=i/0;
+            if(dto==null){
+                throw  new RuntimeException("消息对象为空");
+            }
             //从缓存中获取当前用户的订单信息
             List<OrderItem> cartList=dto.getOrderItems();
             Order order=new Order();
@@ -107,15 +109,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         List<MessageSendLog> messageSendLogs = messageSendLogService.listBySendStatus();
         if(!CollectionUtil.isEmpty(messageSendLogs)){
             messageSendLogs.stream().forEach(s->{
-                String sendStatus="0";
-                try {
-                    sender.sendCreateOrderMessage(JSONUtil.toBean(s.getMsgContent(),CreateOrderMessage.class));
-                    log.info("{}:开始重发成功",s.getMsgId());
-                }catch (Exception ex){
-                    sendStatus="1";
-                log.info("{}:开始重发失败===：{}",s.getMsgId(),ex.getMessage());
-                }finally {
-                    messageSendLogService.saveMsgSendLog(s.getMsgId(),s.getMsgContent(),sendStatus);
+                //重试次数超过三次  需人工干预
+                if(s.getRetryCount()>3){
+                    messageSendLogService.updateMsgStatus(s.getMsgId(),"2");
+                    //发送邮件预警
+                    //TODO
+                    return;
+                }else {
+                    messageSendLogService.updateMsgRetryCount(s.getMsgId());
+                    //重新投递
+                    sender.retrySend(s.getMsgExchange(), s.getMsgRouteKey(), s.getMsgContent(), s.getMsgId());
                 }
             });
         }
@@ -130,7 +133,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
     public boolean returnStock(Long orderId){
         boolean result=false;
         try {
-            Thread.sleep(5000);
             Set<Map.Entry<Object, Object>> sku_key = redissonClient.getMap("inventory_flow_" + orderId).entrySet();
             StringBuilder sb2 = new StringBuilder();
             List<StockDto> stockDtos=new ArrayList<>();

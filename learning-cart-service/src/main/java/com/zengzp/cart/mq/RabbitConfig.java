@@ -4,6 +4,7 @@ import cn.hutool.json.JSONUtil;
 import com.learning.code.common.contant.OrderConstant;
 import com.learning.code.common.contant.OrderQueueEnum;
 import com.learning.code.common.contant.OrderQueueNameConstant;
+import com.learning.dubbo.MessageSendLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.RabbitListenerConfigurer;
@@ -26,7 +27,8 @@ import java.util.Map;
 public class RabbitConfig implements RabbitListenerConfigurer {
     @Resource
     private RabbitTemplate rabbitTemplate;
-
+    @Resource
+    private MessageSendLogService messageSendLogService;
     @Override
     public void configureRabbitListeners(RabbitListenerEndpointRegistrar registrar) {
         registrar.setMessageHandlerMethodFactory(messageHandlerMethodFactory());
@@ -58,6 +60,7 @@ public class RabbitConfig implements RabbitListenerConfigurer {
         // 消息确认，yml需要配置 publisher-confirms: true
         rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
             if (ack) {
+                messageSendLogService.updateMsgStatus(correlationData.getId(),"1");
                 log.info("消息发送到exchange成功,id: {}", correlationData.getId());
             } else {
                 log.info("消息发送到exchange失败,原因: {}", cause);

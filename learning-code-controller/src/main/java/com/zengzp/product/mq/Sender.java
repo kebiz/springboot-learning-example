@@ -1,12 +1,13 @@
 package com.zengzp.product.mq;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.json.JSONUtil;
 import com.learning.code.common.contant.OrderQueueEnum;
-import com.learning.code.common.model.BaseOrderMessage;
-import com.learning.code.common.model.CreateOrderMessage;
-import com.learning.code.common.model.OrderFailMessage;
-import com.learning.code.common.model.SynStockDBMessage;
+import com.learning.code.common.model.*;
+import com.learning.code.common.util.MessageHelper;
+import com.learning.dubbo.MessageSendLogService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -27,7 +28,8 @@ import java.time.LocalDateTime;
 public class Sender {
     @Autowired
     private RabbitTemplate rabbitTemplate;
-
+    @Reference(version = "1.2")
+    private MessageSendLogService messageSendLogService;
 
     /**
      * 订单创建
@@ -61,8 +63,21 @@ public class Sender {
     }
     private void convertAndSend(OrderQueueEnum queue, Object message) {
         CorrelationData correlationData = new CorrelationData(IdUtil.fastSimpleUUID());
-        rabbitTemplate.convertAndSend(queue.getExchange(), queue.getRouteKey(), message, correlationData);
-    }
+        MessageSendLog messageSendLog=new MessageSendLog();
+        messageSendLog.setMsgId(correlationData.getId());
+        messageSendLog.setMsgContent(JSONUtil.toJsonPrettyStr(message));
+        messageSendLog.setMsgExchange(queue.getExchange());
+        messageSendLog.setMsgRouteKey(queue.getRouteKey());
+        messageSendLog.setQueueType("direct");
+        messageSendLog.setSendStatus("0");
+        messageSendLogService.saveMsgSendLog(messageSendLog);
+        rabbitTemplate.convertAndSend(queue.getExchange(), queue.getRouteKey(), MessageHelper.objToMsg(message), correlationData);
 
+    }
+    public void retrySend(String exchange,String routeKey, Object message,String msgId) {
+        CorrelationData correlationData = new CorrelationData(msgId);
+        rabbitTemplate.convertAndSend(exchange, routeKey, MessageHelper.objToMsg(message), correlationData);
+
+    }
 
 }

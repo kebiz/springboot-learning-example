@@ -45,8 +45,6 @@ public class OrderTestServiceImpl implements OrderTestService {
     private IdWorker idWorker;
     @Autowired
     private RedisTemplate redisTemplate;
-    @Reference(version = "1.1")
-    private MessageSendLogService messageSendLogService;
     @Resource
     private Sender sender;
     /**
@@ -83,16 +81,10 @@ public class OrderTestServiceImpl implements OrderTestService {
         message.setOrderDto(orderDto);
         message.setOrderId(order.getId());
         message.setUserId(order.getUserName());
-        try{
-            sender.sendCreateOrderMessage(message);
-        }catch (Exception ex){
-            //记录错误日志信息
-            messageSendLogService.saveMsgSendLog(order.getId().toString(), JSONUtil.toJsonPrettyStr(message),"-1");
-            throw new RuntimeException("rabbit服务器出错!");
-        }finally {
-            resultMap.put("orderId",order.getId());
-            return resultMap;
-        }
+        sender.sendCreateOrderMessage(message);
+        resultMap.put("orderId",order.getId());
+        return resultMap;
+
 
     }
 

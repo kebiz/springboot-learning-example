@@ -2,19 +2,27 @@ package com.zengzp.product.mq;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
+import com.learning.code.common.consumer.BaseConsumer;
 import com.learning.code.common.contant.OrderQueueNameConstant;
 import com.learning.code.common.model.CreateOrderMessage;
+import com.learning.code.common.model.MessageSendLog;
 import com.learning.code.common.model.OrderFailMessage;
+import com.learning.code.common.proxy.BaseConsumerProxy;
+import com.learning.code.common.util.MessageHelper;
 import com.learning.dubbo.MessageSendLogService;
 import com.rabbitmq.client.Channel;
+import com.zengzp.product.mq.consumer.OrderConsumer;
+import com.zengzp.product.mq.consumer.ReturnStockConsumer;
 import com.zengzp.product.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.asm.Advice;
 import org.apache.dubbo.config.annotation.Reference;
 import org.redisson.api.RScript;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,66 +39,33 @@ import java.util.*;
 @Slf4j
 @Component
 public class OrderListener {
-    @Autowired
-    private OrderService orderService;
-    @Reference(version = "1.1")
+    @Reference(version = "1.2")
     private MessageSendLogService messageSendLogService;
+    @Autowired
+    private OrderConsumer orderConsumer;
+    @Autowired
+    private ReturnStockConsumer returnStockConsumer;
     @RabbitListener(queues = OrderQueueNameConstant.ORDER_CREATE)
-    public void createOrder(CreateOrderMessage orderMessage, Channel channel, Message message) throws IOException {
-        log.info("==========生产================收到订单创建消息:CorrelationId{},当前时间{},消息内容{}.", message.getMessageProperties().getCorrelationId(),
+    public void createOrder(Channel channel, Message message) throws IOException {
+        log.info("==========生产================收到订单创建消息DeliveryTag:{},当前时间{},消息内容{}.", message.getMessageProperties().getDeliveryTag(),
                 DateUtil.now(),
-                orderMessage.toString());
-       /*try {*/
-            //减库存 下订单 写入订单
-        System.out.print(1/0);
-/*
-            Boolean succ = orderService.createOrder(orderMessage.getOrderDto());
-            if (succ) {
-                log.info("订单创建执行成功: deliveryTag{}", message.getMessageProperties().getDeliveryTag());
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
-            } else {
-                throw new RuntimeException("订单创建失败");
-            }*/
-       /* } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            log.info("订单创建执行失败: deliveryTag{}", message.getMessageProperties().getDeliveryTag());
-
-            channel.basicReject(message.getMessageProperties().getDeliveryTag(), false);
-        }*/
+                MessageHelper.msgToObj(message,CreateOrderMessage.class));
+        BaseConsumerProxy baseConsumerProxy = new BaseConsumerProxy(orderConsumer, messageSendLogService);
+        BaseConsumer proxy = (BaseConsumer) baseConsumerProxy.getProxy();
+        if (null != proxy) {
+            proxy.consume(message, channel);
+        }
     }
 
     @RabbitListener(queues = OrderQueueNameConstant.ERROR_QUEUE)
-    public void dealErrorMessage(CreateOrderMessage createOrderMessage, Channel channel, Message message) throws IOException {
-        log.info("=========生产==========收到订单创建失败消息:CorrelationId{},当前时间{},消息内容{}.", message.getMessageProperties().getCorrelationId(),
+    public void dealErrorMessage(Channel channel, Message message) throws IOException {
+        log.info("=========生产==========收到回退库存消息:CorrelationId{},当前时间{},消息内容{}.", message.getMessageProperties().getCorrelationId(),
                 DateUtil.now(),
-                createOrderMessage.toString());
-        try {
-            //记录错误日志信息
-            String keyUpper=null;
-            Map<String, Object> headers = message.getMessageProperties().getHeaders();
-            for (String key : headers.keySet()) {
-                if("spring_listener_return_correlation".equals(key)){
-                    if(headers.get(key)!=null){
-                        keyUpper = (String)headers.get(key);
-                    }
-
-                }
-
-            }
-            messageSendLogService.saveMsgSendLog(keyUpper, JSONUtil.toJsonPrettyStr(createOrderMessage),"-2");
-
-            log.info("记录错误日志成功: msgId{}", keyUpper);
-            /* if(orderService.returnStock(createOrderMessage.getOrderId())){
-               log.info("订单回退执行成功: deliveryTag{}", message.getMessageProperties().getDeliveryTag());
-               channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
-           }else {
-               throw new RuntimeException("订单回退报错");
-           }*/
-        }catch (Exception ex){
-            log.error(ex.getMessage(), ex);
-            log.info("处理异常队列消息失败: deliveryTag{},发送邮件到管理员", message.getMessageProperties().getDeliveryTag());
-
-            channel.basicReject(message.getMessageProperties().getDeliveryTag(), false);
+                MessageHelper.msgToObj(message,CreateOrderMessage.class));
+        BaseConsumerProxy baseConsumerProxy = new BaseConsumerProxy(returnStockConsumer, messageSendLogService);
+        BaseConsumer proxy = (BaseConsumer) baseConsumerProxy.getProxy();
+        if (null != proxy) {
+            proxy.consume(message, channel);
         }
 
     }
