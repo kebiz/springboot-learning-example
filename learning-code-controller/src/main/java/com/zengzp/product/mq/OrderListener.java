@@ -1,33 +1,23 @@
 package com.zengzp.product.mq;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.json.JSONUtil;
 import com.learning.code.common.consumer.BaseConsumer;
 import com.learning.code.common.contant.OrderQueueNameConstant;
 import com.learning.code.common.model.CreateOrderMessage;
-import com.learning.code.common.model.MessageSendLog;
-import com.learning.code.common.model.OrderFailMessage;
-import com.learning.code.common.proxy.BaseConsumerProxy;
 import com.learning.code.common.util.MessageHelper;
 import com.learning.dubbo.MessageSendLogService;
+import com.learning.dubbo.proxy.BaseConsumerProxy;
 import com.rabbitmq.client.Channel;
 import com.zengzp.product.mq.consumer.OrderConsumer;
 import com.zengzp.product.mq.consumer.ReturnStockConsumer;
-import com.zengzp.product.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.asm.Advice;
 import org.apache.dubbo.config.annotation.Reference;
-import org.redisson.api.RScript;
-import org.redisson.api.RedissonClient;
-import org.redisson.client.codec.StringCodec;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.*;
 
 /**
  * @author ：zengzhipeng
@@ -46,10 +36,9 @@ public class OrderListener {
     @Autowired
     private ReturnStockConsumer returnStockConsumer;
     @RabbitListener(queues = OrderQueueNameConstant.ORDER_CREATE)
-    public void createOrder(Channel channel, Message message) throws IOException {
-        log.info("==========生产================收到订单创建消息DeliveryTag:{},当前时间{},消息内容{}.", message.getMessageProperties().getDeliveryTag(),
-                DateUtil.now(),
-                MessageHelper.msgToObj(message,CreateOrderMessage.class));
+    public void createOrder(Message message ,Channel channel) throws IOException {
+        log.info("==========生产================收到订单创建消息DeliveryTag:{},当前时间{},消息内容{}.", "",
+                DateUtil.now(),MessageHelper.msgToObj(message,CreateOrderMessage.class));
         BaseConsumerProxy baseConsumerProxy = new BaseConsumerProxy(orderConsumer, messageSendLogService);
         BaseConsumer proxy = (BaseConsumer) baseConsumerProxy.getProxy();
         if (null != proxy) {

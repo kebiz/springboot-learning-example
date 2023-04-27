@@ -26,10 +26,10 @@ spring:
       password: guest
       listener:
          simple:
-          prefetch: 100
-          acknowledge-mode: manual
-     publisher-returns: true
-     publisher-confirm-type: correlated
+            prefetch: 100
+            acknowledge-mode: manual
+      publisher-returns: true
+      publisher-confirm-type: correlated
   datasource:
     druid:
         connection-init-sqls: set names utf8mb4

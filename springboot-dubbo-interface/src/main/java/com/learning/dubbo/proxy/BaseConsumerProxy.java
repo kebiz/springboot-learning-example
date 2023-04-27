@@ -1,4 +1,4 @@
-package com.learning.code.common.proxy;
+package com.learning.dubbo.proxy;
 
 import com.learning.code.common.model.MessageSendLog;
 import com.learning.dubbo.MessageSendLogService;
@@ -22,7 +22,7 @@ public class BaseConsumerProxy {
     private Object target;
     private MessageSendLogService messageSendLogService;
 
-    public BaseConsumerProxy(Object target,MessageSendLogService messageSendLogService){
+    public BaseConsumerProxy(Object target, MessageSendLogService messageSendLogService){
         this.target=target;
         this.messageSendLogService=messageSendLogService;
     }
