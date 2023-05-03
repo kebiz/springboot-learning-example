@@ -31,8 +31,9 @@ public class BaseConsumerProxy {
         ClassLoader classLoader = target.getClass().getClassLoader();
         Class<?>[] interfaces = target.getClass().getInterfaces();
         Object proxy1=Proxy.newProxyInstance(classLoader,interfaces,((proxy, method, args) -> {
-            Channel channel  =(Channel)args[0];
-            Message message  =(Message)args[1];
+            Object object  =(Object)args[0];
+            Channel channel  =(Channel)args[1];
+            Message message  =(Message)args[2];
             String correlationId = getCorrelationId(message);
             // 消费幂等性, 防止消息被重复消费
             if (isConsumed(correlationId)) {

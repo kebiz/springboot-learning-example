@@ -33,14 +33,14 @@ public class OrderListener {
     @Resource
     private MessageSendLogService messageSendLogService;
     @RabbitListener(queues = OrderQueueNameConstant.SYN_STOCK_DB)
-    public void synStockDB(Channel channel, Message message) throws IOException {
+    public void synStockDB(SynStockDBMessage synStockDBMessage,Channel channel, Message message) throws IOException {
         log.info("=========生产==========收到同步库存数据消息:deliveryTag{},当前时间{},消息内容{}.", message.getMessageProperties().getDeliveryTag(),
                 DateUtil.now(),
                 MessageHelper.msgToObj(message,SynStockDBMessage.class));
             BaseConsumerProxy baseConsumerProxy = new BaseConsumerProxy(synStockDBConsumer, messageSendLogService);
             BaseConsumer proxy = (BaseConsumer) baseConsumerProxy.getProxy();
             if (null != proxy) {
-                proxy.consume(message, channel);
+                proxy.consume(synStockDBMessage, channel,message);
             }
 
     }

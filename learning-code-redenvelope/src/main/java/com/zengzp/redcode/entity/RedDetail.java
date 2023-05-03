@@ -1,7 +1,12 @@
 package com.zengzp.redcode.entity;
 
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import lombok.Builder;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -12,8 +17,10 @@ import java.util.Date;
  * @since 2023-04-22 20:38:42
  */
 @SuppressWarnings("serial")
+@Builder
+@Data
 public class RedDetail extends Model<RedDetail> {
-    
+    @TableId(type = IdType.AUTO)
     private Integer id;
     //红包记录ID
     private Integer redId;
@@ -25,64 +32,5 @@ public class RedDetail extends Model<RedDetail> {
     private Date createTime;
     //更新时间
     private Date updateTime;
-
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getRedId() {
-        return redId;
-    }
-
-    public void setRedId(Integer redId) {
-        this.redId = redId;
-    }
-
-    public Double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Double amount) {
-        this.amount = amount;
-    }
-
-    public Integer getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Integer isActive) {
-        this.isActive = isActive;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    /**
-     * 获取主键值
-     *
-     * @return 主键值
-     */
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
-    }
+}
 

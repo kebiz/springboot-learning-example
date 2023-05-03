@@ -3,8 +3,10 @@ package com.zengzp.redcode.dao;
 import java.util.List;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.zengzp.redcode.entity.RedRodDetail;
+import org.springframework.stereotype.Repository;
 
 /**
  * 抢红包记录表(RedRodDetail)表数据库访问层
@@ -12,6 +14,8 @@ import com.zengzp.redcode.entity.RedRodDetail;
  * @author zeengzp
  * @since 2023-04-22 20:48:48
  */
+@Repository
+@Mapper
 public interface RedRodDetailDao extends BaseMapper<RedRodDetail> {
 
 /**

@@ -26,9 +26,10 @@ public class ReturnStockConsumer implements BaseConsumer {
     @Autowired
     private OrderService orderService;
     @Override
-    public void consume(Message message, Channel channel) throws IOException {
+    public void consume(Object object, Channel channel, Message message) throws IOException {
         //减库存 下订单 写入订单
-        CreateOrderMessage createOrderMessage = MessageHelper.msgToObj(message, CreateOrderMessage.class);
+        CreateOrderMessage createOrderMessage=(CreateOrderMessage)object;
+        //CreateOrderMessage createOrderMessage = MessageHelper.msgToObj(message, CreateOrderMessage.class);
         Assert.notNull(createOrderMessage,"消息对象不能为空");
         boolean succ = orderService.returnStock(createOrderMessage.getOrderId());
         if(!succ){

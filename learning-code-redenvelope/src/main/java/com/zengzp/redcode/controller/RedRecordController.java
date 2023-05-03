@@ -5,11 +5,18 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.api.ApiController;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zengzp.redcode.constant.BaseResponse;
+import com.zengzp.redcode.constant.StatusCode;
+import com.zengzp.redcode.dto.RedPacketDto;
 import com.zengzp.redcode.entity.RedRecord;
 import com.zengzp.redcode.service.RedRecordService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.List;
 
@@ -20,7 +27,8 @@ import java.util.List;
  * @since 2023-03-19 16:32:43
  */
 @RestController
-@RequestMapping("redRecord")
+@RequestMapping(value = "/redRecord")
+@Slf4j
 public class RedRecordController extends ApiController {
     /**
      * 服务对象
@@ -28,6 +36,29 @@ public class RedRecordController extends ApiController {
     @Resource
     private RedRecordService redRecordService;
 
+    @PostMapping("/handOut")
+    public R handOut(@Validated @RequestBody RedPacketDto redPacketDto, BindingResult result){
+        if(result.hasErrors()){
+            return failed(StatusCode.INVALIDPARAMS);
+        }
+        try {
+           return success(redRecordService.handOut(redPacketDto)) ;
+        }catch (Exception ex){
+            logger.error(ex.getMessage());
+            return failed(StatusCode.FAIL);
+        }
+
+    }
+    @PostMapping(value = "/rod",produces = "application/json;charset=UTF-8")
+    public R Rod(@RequestParam(value = "userId") @NotBlank Integer userId, @RequestParam(value = "redId") @NotBlank String redId){
+        try {
+            return success(redRecordService.rod(userId,redId)) ;
+        }catch (Exception ex){
+            logger.error(ex.getMessage());
+            return failed(StatusCode.ROD_FAIL);
+        }
+
+    }
     /**
      * 分页查询所有数据
      *

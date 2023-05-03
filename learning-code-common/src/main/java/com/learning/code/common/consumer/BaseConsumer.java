@@ -13,5 +13,5 @@ import java.io.IOException;
  * @version: 1$
  */
 public interface BaseConsumer {
-    void consume(Message message, Channel channel) throws IOException;
+    void consume(Object object, Channel channel, Message message) throws IOException;
 }

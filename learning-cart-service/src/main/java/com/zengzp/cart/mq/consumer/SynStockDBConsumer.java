@@ -26,9 +26,10 @@ public class SynStockDBConsumer implements BaseConsumer {
     @Autowired
     private SkuService skuService;
     @Override
-    public void consume(Message message, Channel channel) throws IOException {
+    public void consume(Object object, Channel channel, Message message) throws IOException {
         try {
-            SynStockDBMessage synStockDBMessage = MessageHelper.msgToObj(message, SynStockDBMessage.class);
+            SynStockDBMessage synStockDBMessage =(SynStockDBMessage)object;
+            //SynStockDBMessage synStockDBMessage = MessageHelper.msgToObj(message, SynStockDBMessage.class);
             Assert.notNull(synStockDBMessage,"消息对象不能为空");
             Assert.notNull(synStockDBMessage.getOrderId(), "订单ID不能为空");
             Assert.notEmpty(synStockDBMessage.getStockDtoList(), "扣减库存数据不能为空");

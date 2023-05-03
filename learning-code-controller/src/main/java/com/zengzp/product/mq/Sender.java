@@ -71,12 +71,12 @@ public class Sender {
         messageSendLog.setQueueType("direct");
         messageSendLog.setSendStatus("0");
         messageSendLogService.saveMsgSendLog(messageSendLog);
-        rabbitTemplate.convertAndSend(queue.getExchange(), queue.getRouteKey(), MessageHelper.objToMsg(message), correlationData);
+        rabbitTemplate.convertAndSend(queue.getExchange(), queue.getRouteKey(), message, correlationData);
 
     }
     public void retrySend(String exchange,String routeKey, Object message,String msgId) {
         CorrelationData correlationData = new CorrelationData(msgId);
-        rabbitTemplate.convertAndSend(exchange, routeKey, MessageHelper.objToMsg(message), correlationData);
+        rabbitTemplate.convertAndSend(exchange, routeKey, message, correlationData);
 
     }
 

@@ -36,25 +36,25 @@ public class OrderListener {
     @Autowired
     private ReturnStockConsumer returnStockConsumer;
     @RabbitListener(queues = OrderQueueNameConstant.ORDER_CREATE)
-    public void createOrder(Message message ,Channel channel) throws IOException {
+    public void createOrder(CreateOrderMessage createOrderMessage ,Channel channel,Message message) throws IOException {
         log.info("==========生产================收到订单创建消息DeliveryTag:{},当前时间{},消息内容{}.", "",
                 DateUtil.now(),MessageHelper.msgToObj(message,CreateOrderMessage.class));
         BaseConsumerProxy baseConsumerProxy = new BaseConsumerProxy(orderConsumer, messageSendLogService);
         BaseConsumer proxy = (BaseConsumer) baseConsumerProxy.getProxy();
         if (null != proxy) {
-            proxy.consume(message, channel);
+            proxy.consume(createOrderMessage, channel,message);
         }
     }
 
     @RabbitListener(queues = OrderQueueNameConstant.ERROR_QUEUE)
-    public void dealErrorMessage(Channel channel, Message message) throws IOException {
+    public void dealErrorMessage(CreateOrderMessage createOrderMessage ,Channel channel,Message message) throws IOException {
         log.info("=========生产==========收到回退库存消息:CorrelationId{},当前时间{},消息内容{}.", message.getMessageProperties().getCorrelationId(),
                 DateUtil.now(),
                 MessageHelper.msgToObj(message,CreateOrderMessage.class));
         BaseConsumerProxy baseConsumerProxy = new BaseConsumerProxy(returnStockConsumer, messageSendLogService);
         BaseConsumer proxy = (BaseConsumer) baseConsumerProxy.getProxy();
         if (null != proxy) {
-            proxy.consume(message, channel);
+            proxy.consume(createOrderMessage, channel,message);
         }
 
     }

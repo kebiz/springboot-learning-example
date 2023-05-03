@@ -31,14 +31,15 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Autowired
     private RedisTemplate redisTemplate;
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    //@Transactional(rollbackFor = Exception.class)
     public void synStockDB(List<StockDto> stockDtos){
             Assert.notEmpty(stockDtos,"同步数据为空");
             stockDtos.stream().forEach(stockDto -> {
                 Sku sku = this.getById(stockDto.getSkuId());
                 skuMapper.updateByStock(stockDto.getSkuId(),stockDto.getSaleNum(),sku.getVersion());
+                //TODO需优化
                 //同步商品缓存
-                redisTemplate.boundHashOps(CacheKey.CART_LIST.toString()).put(sku.getId(),sku);
+                redisTemplate.boundHashOps(CacheKey.CART_LIST.toString()).put(sku.getId(),this.getById(stockDto.getSkuId()));
             });
     }
 }
