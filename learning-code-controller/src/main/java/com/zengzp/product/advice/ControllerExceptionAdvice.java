@@ -3,6 +3,7 @@ package com.zengzp.product.advice;
 import com.zengzp.product.constants.AppCode;
 import com.zengzp.product.constants.ResultCode;
 import com.zengzp.product.exception.APIException;
+import com.zengzp.product.exception.RepeatSubmitException;
 import com.zengzp.product.vo.ResultVo;
 import org.apache.shiro.ShiroException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -32,6 +33,11 @@ public class ControllerExceptionAdvice {
     @ExceptionHandler({APIException.class})
     public ResultVo APIExceptionHandler(APIException ex){
         return new ResultVo(AppCode.APP_ERROR,ex.getMessage());
+
+    }
+    @ExceptionHandler({RepeatSubmitException.class})
+    public ResultVo RepeatSubmitExceptionHandler(RepeatSubmitException ex){
+        return new ResultVo(AppCode.REAPEAT_SUBMIT_ERROR);
 
     }
     @ExceptionHandler(ShiroException.class)

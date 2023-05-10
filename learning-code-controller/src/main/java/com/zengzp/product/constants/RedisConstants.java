@@ -9,4 +9,5 @@ package com.zengzp.product.constants;
  */
 public class RedisConstants {
     public static final String AVOID_REPEATABLE_COMMIT="avoid_repeatable_commit";
+    public static final String AVOID_REPEATABLE_COUNT="avoid_repeatable_count";
 }

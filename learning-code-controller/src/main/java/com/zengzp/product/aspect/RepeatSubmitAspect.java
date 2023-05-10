@@ -1,6 +1,7 @@
 package com.zengzp.product.aspect;
 
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.exceptions.ApiException;
 import com.zengzp.product.annotation.NoRepeatSubmit;
@@ -42,7 +43,8 @@ public class RepeatSubmitAspect {
     private  RedisTemplate redisTemplate;
     @Autowired
     private RedissonClient redissonClient;
-    @Pointcut(value = "@annotation(com.zengzp.product.annotation.NoRepeatSubmit)")
+   // @Pointcut(value = "@annotation(com.zengzp.product.annotation.NoRepeatSubmit)")
+    @Pointcut(value = "")
     public void pointCut() {
     }
     @Around("pointCut()")
@@ -64,16 +66,20 @@ public class RepeatSubmitAspect {
         String ipKey = String.format("%s#%s", className, name);
         // 转换成HashCode
         int hashCode = Math.abs(ipKey.hashCode());
-        String key = String.format("%s:%s_%d", RedisConstants.AVOID_REPEATABLE_COMMIT, ip, hashCode);
-        log.info("ipKey={},hashCode={},key={}", ipKey, hashCode, key);
+        String lock_key = String.format("%s:%s_%d", RedisConstants.AVOID_REPEATABLE_COMMIT, ip, hashCode);
+        String count_key = String.format("%s:%s_%d", RedisConstants.AVOID_REPEATABLE_COUNT, ip, hashCode);
+        log.info("ipKey={},hashCode={},key={}", ipKey, hashCode, lock_key);
        NoRepeatSubmit noRepeatSubmit=method.getAnnotation(NoRepeatSubmit.class);
-       long lockTime=noRepeatSubmit.lockTime();
-        boolean isLock=redissonClient.getLock(key).tryLock(1,lockTime,TimeUnit.MILLISECONDS);
+        long lockTime=noRepeatSubmit.lockTime();
+        long maxTime = noRepeatSubmit.maxTime();
+        long forbiddenTime = noRepeatSubmit.forbiddenTime();
+
+       // boolean isLock=redissonClient.getLock(lock_key).tryLock(1,lockTime,TimeUnit.MILLISECONDS);
        // String value = (String)redisTemplate.opsForValue().get(key);
-        if (!isLock) {
+     /*   if (!isLock) {
             log.info("请勿重复提交表单");
             return ResultVo.fail(AppCode.REAPEAT_SUBMIT_ERROR);
-        }
+        }*/
         // 设置过期时间
         //redisTemplate.opsForValue().set(key, UUID.randomUUID().toString(), lockTime, TimeUnit.MILLISECONDS);
         //执行方法
@@ -81,9 +87,12 @@ public class RepeatSubmitAspect {
         try {
             object= point.proceed();
         }finally {
-            redissonClient.getLock(key).unlock();
+/*
+            redissonClient.getLock(lock_key).unlock();
+*/
         }
 
         return object;
     }
 }
+

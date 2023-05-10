@@ -5,11 +5,22 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.METHOD})
+@Target({ElementType.METHOD,ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NoRepeatSubmit {
     /**
-     * 设置重复提交锁定时间，默认1秒
+     * 多长时间 ，默认5秒
      */
-    long lockTime() default 50000;
+    long lockTime() default 5000L;
+    /**
+     * 最大访问次数
+     * @return 最大访问次数
+     */
+    long maxTime() default 3L;
+
+    /**
+     * 禁用时长，单位/秒
+     * @return 禁用时长
+     */
+    long forbiddenTime() default 120L;
 }

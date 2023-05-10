@@ -1,6 +1,8 @@
 package com.zengzp.product.config;
 
+import com.zengzp.product.interceptor.AccessLimintInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -24,4 +26,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/passport/**", "/error/**", "/assets/**", "/getKaptcha/**", "/websocket", "favicon.ico")
                 .addPathPatterns("/**");
     }*/
+    @Bean
+    public AccessLimintInterceptor createAccessLimintInterceptor(){
+        return new AccessLimintInterceptor();
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(createAccessLimintInterceptor())
+                .addPathPatterns("/**");
+    }
 }
